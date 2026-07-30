@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
+const swaggerUiDist = require('swagger-ui-dist');
 const swaggerSpec = require('./config/swagger');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const errorHandler = require('./middleware/error.middleware');
@@ -10,7 +11,11 @@ const errorHandler = require('./middleware/error.middleware');
 const app = express();
 
 // Security HTTP headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
 
 // CORS configuration
 app.use(cors({
@@ -38,8 +43,22 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'UP', message: 'API Server is healthy' });
 });
 
+// Serve Swagger UI static assets directly with correct MIME types
+const swaggerAssetPath = swaggerUiDist.getAbsoluteFSPath();
+app.use('/api-docs', express.static(swaggerAssetPath));
+
+// Swagger UI options with CDN fallbacks for serverless execution
+const swaggerUiOptions = {
+  explorer: true,
+  customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui.min.css',
+  customJs: [
+    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-bundle.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-standalone-preset.min.js'
+  ]
+};
+
 // Swagger Interactive API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Auth rate limiter on auth routes
 app.use('/api/auth', authLimiter);
