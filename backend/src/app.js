@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const notFoundHandler = require('./middleware/notFound.middleware');
 const errorHandler = require('./middleware/error.middleware');
 
@@ -36,10 +38,13 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'UP', message: 'API Server is healthy' });
 });
 
+// Swagger Interactive API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+
 // Auth rate limiter on auth routes
 app.use('/api/auth', authLimiter);
 
-// API Routes placeholder (will be attached in subsequent phases)
+// API Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/projects', require('./routes/project.routes'));
 app.use('/api/tasks', require('./routes/task.routes'));

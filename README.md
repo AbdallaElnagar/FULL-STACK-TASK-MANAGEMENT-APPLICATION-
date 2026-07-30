@@ -79,6 +79,36 @@ Tasks can be filtered by:
 
 Multiple filters can be combined in a single request.
 
+### API Documentation (Swagger / OpenAPI)
+
+Interactive API documentation is available through Swagger UI.
+
+Start the backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+Then open in browser:
+
+```text
+http://localhost:5000/api-docs
+```
+
+The Swagger documentation includes:
+
+- Authentication endpoints (`/api/auth/register`, `/api/auth/login`, `/api/auth/me`)
+- User endpoints (`/api/users`)
+- Project endpoints (`/api/projects`, `/api/projects/:projectId`)
+- Project member management (`/api/projects/:projectId/members`, `/api/projects/:projectId/members/:userId`)
+- Task endpoints (`/api/projects/:projectId/tasks`, `/api/projects/:projectId/tasks/:taskId`)
+- Task filtering parameters (`status`, `priority`, `assignee`)
+- JWT Bearer authentication scheme
+- Request and response schemas
+- HTTP status codes
+
+
 ### Validation & Error Handling
 
 - Centralized request validation using `express-validator`
