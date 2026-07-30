@@ -1,3 +1,4 @@
+const path = require('path');
 const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
@@ -11,8 +12,10 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 5000}`,
-        description: 'Development Server'
+        url: process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : `http://localhost:${process.env.PORT || 5000}`,
+        description: process.env.VERCEL_URL ? 'Vercel Serverless Server' : 'Development Server'
       }
     ],
     components: {
@@ -343,9 +346,14 @@ const options = {
       }
     }
   },
-  apis: ['./src/routes/*.js']
+  apis: [
+    path.join(__dirname, '../routes/*.js'),
+    path.join(process.cwd(), 'src/routes/*.js'),
+    path.join(process.cwd(), 'backend/src/routes/*.js')
+  ]
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
 module.exports = swaggerSpec;
+

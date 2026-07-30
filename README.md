@@ -713,6 +713,68 @@ To stop containers and delete persistent MongoDB volume data:
 docker compose down -v
 ```
 
+---
+
+## Vercel Deployment
+
+The application is fully pre-configured for deployment on **Vercel** serverless infrastructure using an external database (e.g. MongoDB Atlas).
+
+### Deployment Options
+
+#### Option A: Deploy via Vercel GitHub Integration (Recommended)
+
+1. Import the repository into Vercel.
+2. For **Backend Deployment**:
+   - Create a project with Root Directory: `backend`
+   - Framework Preset: `Other` / `Node.js`
+   - Configure Environment Variables (see list below).
+3. For **Frontend Deployment**:
+   - Create a project with Root Directory: `frontend`
+   - Framework Preset: `Vite`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Set Environment Variable: `VITE_API_URL=<YOUR_VERCEL_BACKEND_URL>/api`
+
+#### Option B: Deploy via Vercel CLI
+
+```bash
+# Deploy Backend
+cd backend
+vercel --prod
+
+# Deploy Frontend
+cd ../frontend
+vercel --prod
+```
+
+### Production Environment Variables
+
+#### Backend (Vercel Project 1)
+
+| Variable | Required | Description / Example |
+| --- | --- | --- |
+| `MONGODB_URI` | Yes | MongoDB Atlas connection string (`mongodb+srv://user:pass@cluster.mongodb.net/dbname`) |
+| `JWT_SECRET` | Yes | High-entropy random secret string |
+| `JWT_EXPIRES_IN` | Optional | JWT lifetime (Default: `1d`) |
+| `CLIENT_URL` | Yes | Deployed frontend Vercel URL (e.g. `https://your-frontend.vercel.app`) |
+| `NODE_ENV` | Optional | Set to `production` |
+
+#### Frontend (Vercel Project 2)
+
+| Variable | Required | Description / Example |
+| --- | --- | --- |
+| `VITE_API_URL` | Yes | Deployed backend Vercel API URL (e.g. `https://your-backend.vercel.app/api`) |
+
+### Production URLs & Features
+
+- **Frontend SPA**: `https://<your-frontend-project>.vercel.app`
+- **Backend API**: `https://<your-backend-project>.vercel.app/api`
+- **Swagger Documentation**: `https://<your-backend-project>.vercel.app/api-docs`
+- **Health Check**: `https://<your-backend-project>.vercel.app/health`
+
+> **IMPORTANT**: Never commit production environment secrets or MongoDB Atlas passwords to Git or source code repositories. Always set production environment variables securely inside the Vercel Dashboard under **Project Settings → Environment Variables**.
+
+
 
 ---
 
