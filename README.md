@@ -630,6 +630,92 @@ If the configured MongoDB connection is unavailable, the development setup can f
 
 ---
 
+## Docker Support
+
+The application can be run seamlessly using Docker Compose with separate containerized services for:
+
+- **React frontend** (built & served via multi-stage Nginx)
+- **Node.js/Express backend API**
+- **MongoDB database** (with named persistent data volume)
+
+### Prerequisites
+
+- Docker Engine (v20+)
+- Docker Compose (v2+ or `docker-compose`)
+
+### Environment Setup
+
+Create a `.env` file or rely on built-in environment defaults:
+
+```bash
+cp .env.docker.example .env
+```
+
+### Build & Start Containers
+
+To build and start all containers in the foreground:
+
+```bash
+docker compose up --build
+# or using docker-compose syntax:
+docker-compose up --build
+```
+
+To start services in detached mode (background):
+
+```bash
+docker compose up -d --build
+```
+
+### Container Application URLs
+
+- **Frontend SPA**: `http://localhost:80` (or `http://localhost`)
+- **Backend API**: `http://localhost:5000`
+- **Swagger Documentation**: `http://localhost:5000/api-docs`
+
+### Database Seeding in Docker
+
+To seed initial sample data into the Dockerized MongoDB instance:
+
+```bash
+docker compose exec backend npm run seed
+# or directly with docker exec:
+docker exec backend npm run seed
+```
+
+### Viewing Container Logs
+
+```bash
+# View logs from all services
+docker compose logs -f
+
+# View backend API logs
+docker compose logs -f backend
+
+# View MongoDB database logs
+docker compose logs -f mongodb
+
+# View Nginx frontend logs
+docker compose logs -f frontend
+```
+
+### Shutdown & Volume Persistence
+
+Stop running containers while preserving MongoDB data:
+
+```bash
+docker compose down
+```
+
+To stop containers and delete persistent MongoDB volume data:
+
+```bash
+docker compose down -v
+```
+
+
+---
+
 # Database Seed
 
 To create development data:
