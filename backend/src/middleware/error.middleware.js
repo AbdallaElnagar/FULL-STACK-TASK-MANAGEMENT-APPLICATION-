@@ -1,8 +1,6 @@
 const { errorResponse } = require('../utils/apiResponse');
 
 const errorHandler = (err, req, res, next) => {
-  console.error('Unhandled Error:', err);
-
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
   let errors = err.errors || null;
@@ -24,7 +22,7 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     statusCode = 400;
     message = 'Validation Error';
-    errors = Object.values(err.errors).map(val => val.message);
+    errors = Object.values(err.errors).map((val) => val.message);
   }
 
   // Handle JWT errors
@@ -36,6 +34,11 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'TokenExpiredError') {
     statusCode = 401;
     message = 'Token expired. Please log in again.';
+  }
+
+  // Only log unexpected 500 errors in test/dev environment
+  if (statusCode >= 500 && process.env.NODE_ENV !== 'test') {
+    console.error('Server Error:', err);
   }
 
   return errorResponse(res, statusCode, message, errors);

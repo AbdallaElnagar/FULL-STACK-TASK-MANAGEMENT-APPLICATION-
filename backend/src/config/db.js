@@ -5,8 +5,7 @@ let mongoServer;
 const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/task_management_app';
-    
-    // Attempt standard connection
+
     try {
       const conn = await mongoose.connect(mongoUri, {
         serverSelectionTimeoutMS: 3000
@@ -16,7 +15,7 @@ const connectDB = async () => {
     } catch (err) {
       console.warn(`Could not connect to primary MongoDB at ${mongoUri}. Falling back to mongodb-memory-server...`);
       const { MongoMemoryServer } = require('mongodb-memory-server');
-      mongoServer = await MongoMemoryServer.create();
+      mongoServer = await MongoMemoryServer.create({ binary: { version: '7.0.8' } });
       const inMemoryUri = mongoServer.getUri();
       const conn = await mongoose.connect(inMemoryUri);
       console.log(`MongoDB In-Memory Server Connected: ${conn.connection.host}`);
